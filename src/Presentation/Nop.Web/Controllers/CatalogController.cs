@@ -16,6 +16,7 @@ using Nop.Services.Common;
 using Nop.Services.Customers;
 using Nop.Services.Directory;
 using Nop.Services.Events;
+using Nop.Services.Helpers;
 using Nop.Services.Localization;
 using Nop.Services.Logging;
 using Nop.Services.Media;
@@ -30,6 +31,7 @@ using Nop.Web.Framework.Events;
 using Nop.Web.Framework.Security;
 using Nop.Web.Infrastructure.Cache;
 using Nop.Web.Models.Catalog;
+using Nop.Web.Models.Common;
 using Nop.Web.Models.Media;
 
 namespace Nop.Web.Controllers
@@ -69,10 +71,11 @@ namespace Nop.Web.Controllers
         private readonly BlogSettings _blogSettings;
         private readonly ForumSettings _forumSettings;
         private readonly ICacheManager _cacheManager;
-        
+        private readonly IDateTimeHelper _dateTimeHelper;
+
         #endregion
 
-		#region Constructors
+        #region Constructors
 
         public CatalogController(ICategoryService categoryService, 
             IManufacturerService manufacturerService,
@@ -104,7 +107,8 @@ namespace Nop.Web.Controllers
             VendorSettings vendorSettings,
             BlogSettings blogSettings,
             ForumSettings  forumSettings,
-            ICacheManager cacheManager)
+            ICacheManager cacheManager,
+            IDateTimeHelper dateTimeHelper)
         {
             this._categoryService = categoryService;
             this._manufacturerService = manufacturerService;
@@ -137,6 +141,7 @@ namespace Nop.Web.Controllers
             this._blogSettings = blogSettings;
             this._forumSettings = forumSettings;
             this._cacheManager = cacheManager;
+            this._dateTimeHelper = dateTimeHelper;
         }
 
         #endregion
@@ -1488,6 +1493,77 @@ namespace Nop.Web.Controllers
                           })
                           .ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        #endregion
+
+        #region My account / Product reviews
+
+        public ActionResult CustomerProductReviews(int? page)
+        {
+            if (_workContext.CurrentCustomer.IsGuest())
+                return new HttpUnauthorizedResult();
+
+            if (!_catalogSettings.ShowProductReviewsTabOnAccountPage)
+            {
+                return RedirectToRoute("CustomerInfo");
+            }
+
+            var pageSize = _catalogSettings.ProductReviewsPageSizeOnAccountPage;
+            int pageIndex = 0;
+
+            if (page > 0)
+            {
+                pageIndex = page.Value - 1;
+            }
+
+            var list = _productService.GetAllProductReviews(_workContext.CurrentCustomer.Id, null,
+                            pageIndex: pageIndex, pageSize: pageSize);
+
+            var productReviews = new List<CustomerProductReviewModel>();
+
+            foreach (var review in list)
+            {
+                var product = review.Product;
+                var productReviewModel = new CustomerProductReviewModel
+                {
+                    Title = review.Title,
+                    ProductId = product.Id,
+                    ProductName = product.GetLocalized(p => p.Name),
+                    ProductSeName = product.GetSeName(),
+                    Rating = review.Rating,
+                    ReviewText = review.ReviewText,
+                    WrittenOnStr =
+                        _dateTimeHelper.ConvertToUserTime(product.CreatedOnUtc, DateTimeKind.Utc).ToString("g")
+                };
+
+                if (_catalogSettings.ProductReviewsMustBeApproved)
+                {
+                    productReviewModel.ApprovalStatus = review.IsApproved
+                        ? _localizationService.GetResource("Account.CustomerProductReviews.ApprovalStatus.Approved")
+                        : _localizationService.GetResource("Account.CustomerProductReviews.ApprovalStatus.Pending");
+                }
+                productReviews.Add(productReviewModel);
+            }
+
+            var pagerModel = new PagerModel
+            {
+                PageSize = list.PageSize,
+                TotalRecords = list.TotalCount,
+                PageIndex = list.PageIndex,
+                ShowTotalSummary = false,
+                RouteActionName = "CustomerProductReviewsPaged",
+                UseRouteLinks = true,
+                RouteValues = new CustomerProductReviewsModel.CustomerProductReviewsRouteValues { page = pageIndex }
+            };
+
+            var model = new CustomerProductReviewsModel
+            {
+                ProductReviews = productReviews,
+                PagerModel = pagerModel
+            };
+
+            return View(model);
         }
 
         #endregion

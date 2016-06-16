@@ -462,13 +462,5 @@ namespace Nop.Web.Models.Common
         public int page { get; set; }
     }
 
-    /// <summary>
-    /// Class that has only page for route value. Used for (My Account) My Product Reviews pagination
-    /// </summary>
-    public partial class CustomerProductReviewsRouteValues : IRouteValues
-    {
-        public int page { get; set; }
-    }
-
     #endregion Classes
 }

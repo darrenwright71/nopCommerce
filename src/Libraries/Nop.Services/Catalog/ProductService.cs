@@ -1960,9 +1960,6 @@ namespace Nop.Services.Catalog
 
             query = query.OrderBy(c => c.CreatedOnUtc);
 
-            if (pageIndex > 0)
-                pageIndex--;
-
             var productReviews = new PagedList<ProductReview>(query, pageIndex, pageSize);
 
             return productReviews;

@@ -117,7 +117,7 @@ namespace Nop.Admin.Controllers
                             : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.CreatedOnTo.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
 
             var productReviews = _productService.GetAllProductReviews(0, null, 
-                createdOnFromValue, createdToFromValue, model.SearchText, model.SearchStoreId, model.SearchProductId, command.Page, command.PageSize);
+                createdOnFromValue, createdToFromValue, model.SearchText, model.SearchStoreId, model.SearchProductId, command.Page - 1, command.PageSize);
             var gridModel = new DataSourceResult
             {
                 Data = productReviews.Select(x =>
@@ -126,7 +126,7 @@ namespace Nop.Admin.Controllers
                     PrepareProductReviewModel(m, x, false, true);
                     return m;
                 }),
-                Total = productReviews.Count,
+                Total = productReviews.TotalCount
             };
 
             return Json(gridModel);

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Nop.Web.Framework.Mvc;
 using Nop.Web.Models.Common;
 
@@ -14,12 +13,29 @@ namespace Nop.Web.Models.Catalog
         public string ReviewText { get; set; }
         public int Rating { get; set; }
         public string WrittenOnStr { get; set; }
-        public string CurrentApprovalStatus { get; set; }
+        public string ApprovalStatus { get; set; }
     }
 
-    public class CustomerProductReviewPageModel : BaseNopModel
+    public class CustomerProductReviewsModel : BaseNopModel
     {
+        public CustomerProductReviewsModel()
+        {
+            ProductReviews = new List<CustomerProductReviewModel>();
+        }
+
         public IList<CustomerProductReviewModel> ProductReviews { get; set; }
         public PagerModel PagerModel { get; set; }
+
+        #region Nested class
+
+        /// <summary>
+        /// Class that has only page for route value. Used for (My Account) My Product Reviews pagination
+        /// </summary>
+        public partial class CustomerProductReviewsRouteValues : IRouteValues
+        {
+            public int page { get; set; }
+        }
+
+        #endregion
     }
 }

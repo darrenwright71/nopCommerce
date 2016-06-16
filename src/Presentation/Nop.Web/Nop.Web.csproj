@@ -2062,7 +2062,7 @@
     <Content Include="Views\Catalog\_CatalogSelectors.cshtml" />
     <Content Include="Views\Vendor\ApplyVendor.cshtml" />
     <Content Include="Views\Product\_Discontinued.cshtml" />
-    <Content Include="Views\Customer\ProductReviews.cshtml" />
+    <Content Include="Views\Catalog\CustomerProductReviews.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\Roxy_Fileman\tmp\" />

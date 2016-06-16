@@ -675,28 +675,31 @@ set @resources='
     <Value></Value>
   </LocaleResource>
   <LocaleResource Name="Account.CustomerProductReviews">
-    <Value>My Product Reviews</Value>
+    <Value>My product reviews</Value>
   </LocaleResource>
   <LocaleResource Name="Account.CustomerProductReviews.ApprovalStatus.Approved">
     <Value>Approved</Value>
   </LocaleResource>
-  <LocaleResource Name="Account.CustomerProductReviews.ApprovalStatus.NotApproved">
-    <Value>Not approved</Value>
+  <LocaleResource Name="Account.CustomerProductReviews.ApprovalStatus.Pending">
+    <Value>Pending</Value>
   </LocaleResource>
   <LocaleResource Name="Account.CustomerProductReviews.ProductReviewFor">
     <Value>Product review for</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowProductReviewsTabOnAccountPage">
-    <Value>Show product reviews tab on ''Account page''</Value>
+    <Value>Show product reviews tab on ''My account'' page</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowProductReviewsTabOnAccountPage.Hint">
-    <Value>Check to show product reviews tab on ''Account page''.</Value>
+    <Value>Check to show product reviews tab on '' My account'' page.</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.Catalog.ProductReviewsPageSizeOnAccountPage">
-    <Value>Numbers of product reviews to display on ''Account page''</Value>
+    <Value>Product reviews page size</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.Catalog.ProductReviewsPageSizeOnAccountPage.Hint">
-    <Value>This numbers of product reviews to display on ''Account page''.</Value>
+    <Value>Set the page size for product reviews e.g. ''10'' reviews per page.</Value>
+  </LocaleResource>
+  <LocaleResource Name="PageTitle.CustomerProductReviews">
+    <Value>My product reviews</Value>
   </LocaleResource>
 </Language>
 '

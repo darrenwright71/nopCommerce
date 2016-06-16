@@ -1,11 +1,11 @@
-﻿@model Nop.Web.Models.Catalog.CustomerProductReviewPageModel
+﻿@model CustomerProductReviewsModel
 @using Nop.Web.Models.Catalog
 @using Nop.Web.Models.Customer;
 @{
     Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
 
     //title
-    Html.AddTitleParts(T("PageTitle.Account").Text);
+    Html.AddTitleParts(T("PageTitle.CustomerProductReviews").Text);
 }
 @section left
 {
@@ -14,27 +14,21 @@
 
 <div class="page account-page my-product-reviews-list-page">
     <div class="page-title">
-        <h1>@T("Account.MyAccount") - @T("Account.MyProductReviews")</h1>
+        <h1>@T("Account.MyAccount") - @T("Account.CustomerProductReviews")</h1>
     </div>
     <div class="page-body">
-
-
         @if (Model.ProductReviews.Count > 0)
         {
-            using (Html.BeginRouteForm("CustomerProductReviews", FormMethod.Post))
+            foreach (var review in Model.ProductReviews)
             {
-                @Html.AntiForgeryToken()
-                    foreach (var review in Model.ProductReviews)
-                    {
-                        @GetReviewRow(review)
-                    }
-                var pager = Html.Pager(Model.PagerModel);
-                if (!MvcHtmlString.IsNullOrEmpty(pager))
-                {
-                    <div class="pager">
-                        @pager
-                    </div>
-                }
+                @GetReviewRow(review)
+            }
+            var pager = Html.Pager(Model.PagerModel);
+            if (!MvcHtmlString.IsNullOrEmpty(pager))
+            {
+                <div class="pager">
+                    @pager
+                </div>
             }
         }
     </div>
@@ -46,7 +40,7 @@ int ratingPercent = review.Rating * 20;
     <div class="product-review-item">
         <div class="review-item-head">
             <div class="review-title">
-                <strong>@review.Title</strong> &mdash; @review.CurrentApprovalStatus
+                <strong>@review.Title</strong>@(!string.IsNullOrEmpty(review.ApprovalStatus) ? string.Format(" - {0}", review.ApprovalStatus) : null)
             </div>
             <div class="product-review-box">
                 <div class="rating">
@@ -61,14 +55,14 @@ int ratingPercent = review.Rating * 20;
             </div>
             <div class="review-info">
                 <span class="user">
-                    <label>@T("Account.CustomerProductReviews.ReviewFor"):</label>
+                    <label>@T("Account.CustomerProductReviews.ProductReviewFor"):</label>
                     <a href="@Url.RouteUrl("Product", new {SeName = review.ProductSeName})">@review.ProductName</a>
                     
                 </span>
                 <span class="separator">|</span>
                 <span class="date">
                     <label>@T("Reviews.Date"):</label>
-                    <span>@review.DateReviewed</span>
+                    <span>@review.WrittenOnStr</span>
                 </span>
             </div>
         </div>
