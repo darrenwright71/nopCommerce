@@ -189,6 +189,18 @@
   <LocaleResource Name="Account.CustomerOrders.ReturnItems">
     <Value>Return Item(s)</Value>
   </LocaleResource>
+  <LocaleResource Name="Account.CustomerProductReviews">
+    <Value>My product reviews</Value>
+  </LocaleResource>
+  <LocaleResource Name="Account.CustomerProductReviews.ApprovalStatus.Approved">
+    <Value>Approved</Value>
+  </LocaleResource>
+  <LocaleResource Name="Account.CustomerProductReviews.ApprovalStatus.NotApproved">
+    <Value>Not approved</Value>
+  </LocaleResource>
+  <LocaleResource Name="Account.CustomerProductReviews.ProductReviewFor">
+    <Value>Product review for</Value>
+  </LocaleResource>
   <LocaleResource Name="Account.CustomerReturnRequests">
     <Value>Return requests</Value>
   </LocaleResource>
@@ -4961,6 +4973,18 @@
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowProductReviewsPerStore.Hint">
     <Value>Enable show reviews per store.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowProductReviewsTabOnAccountPage">
+    <Value>Show product reviews tab on ''Account page''</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowProductReviewsTabOnAccountPage.Hint">
+    <Value>Check to show product reviews tab on ''Account page''.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.Catalog.ProductReviewsPageSizeOnAccountPage">
+    <Value>Numbers of product reviews to display on ''Account page''</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.Catalog.ProductReviewsPageSizeOnAccountPage.Hint">
+    <Value>This numbers of product reviews to display on ''Account page''.</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowShareButton">
     <Value>Show a share button</Value>

@@ -1,0 +1,76 @@
+﻿@model Nop.Web.Models.Catalog.CustomerProductReviewPageModel
+@using Nop.Web.Models.Catalog
+@using Nop.Web.Models.Customer;
+@{
+    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+
+    //title
+    Html.AddTitleParts(T("PageTitle.Account").Text);
+}
+@section left
+{
+    @Html.Action("CustomerNavigation", "Customer", new { selectedTabId = CustomerNavigationEnum.Info })
+}
+
+<div class="page account-page my-product-reviews-list-page">
+    <div class="page-title">
+        <h1>@T("Account.MyAccount") - @T("Account.MyProductReviews")</h1>
+    </div>
+    <div class="page-body">
+
+
+        @if (Model.ProductReviews.Count > 0)
+        {
+            using (Html.BeginRouteForm("CustomerProductReviews", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                    foreach (var review in Model.ProductReviews)
+                    {
+                        @GetReviewRow(review)
+                    }
+                var pager = Html.Pager(Model.PagerModel);
+                if (!MvcHtmlString.IsNullOrEmpty(pager))
+                {
+                    <div class="pager">
+                        @pager
+                    </div>
+                }
+            }
+        }
+    </div>
+</div>
+
+@helper GetReviewRow(CustomerProductReviewModel review)
+{
+int ratingPercent = review.Rating * 20;
+    <div class="product-review-item">
+        <div class="review-item-head">
+            <div class="review-title">
+                <strong>@review.Title</strong> &mdash; @review.CurrentApprovalStatus
+            </div>
+            <div class="product-review-box">
+                <div class="rating">
+                    <div style="width: @(ratingPercent)%">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="review-content">
+            <div class="review-text">
+                @Html.Raw(Nop.Core.Html.HtmlHelper.FormatText(review.ReviewText, false, true, false, false, false, false))
+            </div>
+            <div class="review-info">
+                <span class="user">
+                    <label>@T("Account.CustomerProductReviews.ReviewFor"):</label>
+                    <a href="@Url.RouteUrl("Product", new {SeName = review.ProductSeName})">@review.ProductName</a>
+                    
+                </span>
+                <span class="separator">|</span>
+                <span class="date">
+                    <label>@T("Reviews.Date"):</label>
+                    <span>@review.DateReviewed</span>
+                </span>
+            </div>
+        </div>
+    </div>
+}

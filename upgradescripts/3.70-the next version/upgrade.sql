@@ -674,6 +674,30 @@ set @resources='
   <LocaleResource Name="Admin.Orders.List.OrderGuid.Hint">
     <Value></Value>
   </LocaleResource>
+  <LocaleResource Name="Account.CustomerProductReviews">
+    <Value>My Product Reviews</Value>
+  </LocaleResource>
+  <LocaleResource Name="Account.CustomerProductReviews.ApprovalStatus.Approved">
+    <Value>Approved</Value>
+  </LocaleResource>
+  <LocaleResource Name="Account.CustomerProductReviews.ApprovalStatus.NotApproved">
+    <Value>Not approved</Value>
+  </LocaleResource>
+  <LocaleResource Name="Account.CustomerProductReviews.ProductReviewFor">
+    <Value>Product review for</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowProductReviewsTabOnAccountPage">
+    <Value>Show product reviews tab on ''Account page''</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowProductReviewsTabOnAccountPage.Hint">
+    <Value>Check to show product reviews tab on ''Account page''.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.Catalog.ProductReviewsPageSizeOnAccountPage">
+    <Value>Numbers of product reviews to display on ''Account page''</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.Catalog.ProductReviewsPageSizeOnAccountPage.Hint">
+    <Value>This numbers of product reviews to display on ''Account page''.</Value>
+  </LocaleResource>
 </Language>
 '
 
@@ -2457,5 +2481,21 @@ GO
  BEGIN
  	INSERT [Setting] ([Name], [Value], [StoreId])
  	VALUES (N'customersettings.requireregistrationfordownloadableproducts', N'False', 0)
+ END
+ GO
+
+ --new setting
+ IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [name] = N'catalogsettings.showproductreviewstabonaccountpage')
+ BEGIN
+ 	INSERT [Setting] ([Name], [Value], [StoreId])
+ 	VALUES (N'catalogsettings.showproductreviewstabonaccountpage', N'True', 0)
+ END
+ GO
+
+ --new setting
+ IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [name] = N'catalogsettings.productreviewspagesizeonaccountpage')
+ BEGIN
+ 	INSERT [Setting] ([Name], [Value], [StoreId])
+ 	VALUES (N'catalogsettings.productreviewspagesizeonaccountpage', N'10', 0)
  END
  GO

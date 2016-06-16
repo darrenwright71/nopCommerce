@@ -17,7 +17,9 @@ using Nop.Core.Domain.Security;
 using Nop.Core.Domain.Tax;
 using Nop.Services.Authentication;
 using Nop.Services.Authentication.External;
+using Nop.Services.Catalog;
 using Nop.Services.Common;
+using Nop.Services.Configuration;
 using Nop.Services.Customers;
 using Nop.Services.Directory;
 using Nop.Services.Events;
@@ -36,6 +38,7 @@ using Nop.Web.Framework.Controllers;
 using Nop.Web.Framework.Security;
 using Nop.Web.Framework.Security.Captcha;
 using Nop.Web.Framework.Security.Honeypot;
+using Nop.Web.Models.Catalog;
 using Nop.Web.Models.Common;
 using Nop.Web.Models.Customer;
 using WebGrease.Css.Extensions;
@@ -80,6 +83,9 @@ namespace Nop.Web.Controllers
         private readonly IAddressAttributeFormatter _addressAttributeFormatter;
         private readonly IReturnRequestService _returnRequestService;
         private readonly IEventPublisher _eventPublisher;
+        private readonly IProductService _productService;
+        private readonly IStoreService _storeService;
+        private readonly ISettingService _settingService;
 
         private readonly MediaSettings _mediaSettings;
         private readonly IWorkflowMessageService _workflowMessageService;
@@ -128,6 +134,9 @@ namespace Nop.Web.Controllers
             IAddressAttributeFormatter addressAttributeFormatter,
             IReturnRequestService returnRequestService,
             IEventPublisher eventPublisher,
+            IProductService productService,
+            IStoreService storeService,
+            ISettingService settingService,
             MediaSettings mediaSettings,
             IWorkflowMessageService workflowMessageService,
             LocalizationSettings localizationSettings,
@@ -171,6 +180,9 @@ namespace Nop.Web.Controllers
             this._addressAttributeFormatter = addressAttributeFormatter;
             this._returnRequestService = returnRequestService;
             this._eventPublisher = eventPublisher;
+            this._productService = productService;
+            this._storeService = storeService;
+            this._settingService = settingService;
             this._mediaSettings = mediaSettings;
             this._workflowMessageService = workflowMessageService;
             this._localizationSettings = localizationSettings;
@@ -295,6 +307,23 @@ namespace Nop.Web.Controllers
 
 
             return result;
+        }
+
+        [NonAction]
+        protected virtual void PrepareCustomerProductReviewModel(CustomerProductReviewModel model, ProductReview review)
+        {
+            var product = review.Product;
+
+            model.Title = review.Title;
+            model.ProductId = product.Id;
+            model.ProductName = product.GetLocalized(p => p.Name, _workContext.WorkingLanguage.Id);
+            model.ProductSeName = product.GetSeName();
+            model.Rating = review.Rating;
+            model.ReviewText = review.ReviewText;
+            model.WrittenOnStr = _dateTimeHelper.ConvertToUserTime(product.CreatedOnUtc, DateTimeKind.Utc).ToString("g");
+            model.CurrentApprovalStatus = review.IsApproved
+                ? _localizationService.GetResource("Account.CustomerProductReviews.ApprovalStatus.Approved")
+                : _localizationService.GetResource("Account.CustomerProductReviews.ApprovalStatus.NotApproved");
         }
 
         [NonAction]
@@ -1323,6 +1352,18 @@ namespace Nop.Web.Controllers
                 });
             }
 
+            var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
+            var catalogSettings = _settingService.LoadSetting<CatalogSettings>(storeScope);
+
+            if (catalogSettings.ShowProductReviewsTabOnAccountPage)
+            {
+                model.CustomerNavigationItems.Add(new CustomerNavigationItemModel
+                {
+                    RouteName = "CustomerProductReviews",
+                    Title = _localizationService.GetResource("Account.CustomerProductReviews"),
+                    Tab = CustomerNavigationEnum.ProductReviews
+                });
+            }
             model.SelectedTab = (CustomerNavigationEnum)selectedTabId;
 
             return PartialView(model);
@@ -1919,6 +1960,51 @@ namespace Nop.Web.Controllers
             _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AvatarPictureId, 0);
 
             return RedirectToRoute("CustomerAvatar");
+        }
+
+        #endregion
+
+        #region My account / Product reviews
+
+        public ActionResult ProductReviews(int page = 0)
+        {
+            if (_workContext.CurrentCustomer.IsGuest())
+                return new HttpUnauthorizedResult();
+
+            var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
+            var catalogSettings = _settingService.LoadSetting<CatalogSettings>(storeScope);
+            var pageSize = catalogSettings.ProductReviewsPageSizeOnAccountPage;
+
+            var list = _productService.GetAllProductReviews(_workContext.CurrentCustomer.Id, null, 
+                            pageIndex: page, pageSize: pageSize);
+
+            var productReviews = new List<CustomerProductReviewModel>();
+
+            foreach (var review in list)
+            {
+                var productReviewModel = new CustomerProductReviewModel();
+                PrepareCustomerProductReviewModel(productReviewModel, review);
+                productReviews.Add(productReviewModel);
+            }
+
+            var pagerModel = new PagerModel
+            {
+                PageSize = list.PageSize,
+                TotalRecords = list.TotalCount,
+                PageIndex = list.PageIndex,
+                ShowTotalSummary = false,
+                RouteActionName = "CustomerProductReviewsPaged",
+                UseRouteLinks = true,
+                RouteValues = new CustomerProductReviewsRouteValues { page = page }
+            };
+
+            var model = new CustomerProductReviewPageModel
+            {
+                ProductReviews = productReviews,
+                PagerModel = pagerModel
+            };
+
+            return View(model);
         }
 
         #endregion

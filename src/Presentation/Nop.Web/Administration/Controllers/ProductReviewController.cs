@@ -117,10 +117,10 @@ namespace Nop.Admin.Controllers
                             : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.CreatedOnTo.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
 
             var productReviews = _productService.GetAllProductReviews(0, null, 
-                createdOnFromValue, createdToFromValue, model.SearchText, model.SearchStoreId, model.SearchProductId);
+                createdOnFromValue, createdToFromValue, model.SearchText, model.SearchStoreId, model.SearchProductId, command.Page, command.PageSize);
             var gridModel = new DataSourceResult
             {
-                Data = productReviews.PagedForCommand(command).Select(x =>
+                Data = productReviews.Select(x =>
                 {
                     var m = new ProductReviewModel();
                     PrepareProductReviewModel(m, x, false, true);
